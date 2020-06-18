@@ -27,8 +27,6 @@ class Screen(object):
 
         self.s.tracer(0, 0)
 
-        self.t3 = Pen3(self)
-#
         self.s.getcanvas()._root().bind("<Up>", lambda _: self.tilt(pi / 32))
         self.s.getcanvas()._root().bind("<Down>", lambda _: self.tilt(0 - pi / 32))
         self.s.getcanvas()._root().bind("<Right>", lambda _: self.turn(pi / 32))
@@ -123,6 +121,11 @@ class Screen(object):
 
             point = point * dilationFactor + other * (1 - dilationFactor)
 
+        elif(cam.depth(other) < 0.01):
+            dilationFactor = cam.depth(point) / (cam.depth(point) - cam.depth(other)) - 0.01
+
+            other = other * dilationFactor + point * (1 - dilationFactor)
+
         position = self.toScreenCoords(point)
 
         if(isnan(position[0]) or isnan(position[1])):
@@ -149,21 +152,33 @@ class Screen(object):
             side = None
 
             if(a < L and a != c):
+                if(c < L):
+                    return
+
                 if(dilationFactor > (L - c) / (a - c)):
                     dilationFactor = (L - c) / (a - c)
                     side = Side(self, 'L')
 
             if(a > R and a != c):
+                if(c > R):
+                    return
+
                 if(dilationFactor > (R - c) / (a - c)):
                     dilationFactor = (R - c) / (a - c)
                     side = Side(self, 'R')
 
             if(b < B and b != d):
+                if(d < B):
+                    return
+
                 if(dilationFactor > (B - d) / (b - d)):
                     dilationFactor = (B - d) / (b - d)
                     side = Side(self, 'B')
 
             if(b > T and b != d):
+                if(d > T):
+                    return
+
                 if(dilationFactor > (T - d) / (b - d)):
                     dilationFactor = (T - d) / (b - d)
                     side = Side(self, 'T')
@@ -211,103 +226,3 @@ class Side(object):
         out = self.coord()
         out.update(other.coord())
         return((out['x'], out['y']))
-
-
-class Pen3(object):
-
-    def __init__(self, screen):
-        self.screen = screen
-        self.t = screen.t
-        self.s = screen.s
-        self.point = Point((0, 0, 0))
-
-    def project(self, point):
-        assert self.screen.dCam != None, "No linked camera"
-        return(self.screen.dCam.camera.project(point))
-
-    def toScreenCoords(self, point):
-        position = self.project(point)
-        return([position[0] * self.screen.scale, position[1] * self.screen.scale])
-
-    def fakeGoto(self, point, other):
-        cam = self.screen.dCam.camera
-        if(not(cam.onCamera(point))):
-            if(not(cam.onCamera(other))):
-                return
-
-            dilationFactor = cam.depth(other) / (cam.depth(other) - cam.depth(point)) - 0.01
-
-            point = point * dilationFactor + other * (1 - dilationFactor)
-
-        position = self.toScreenCoords(point)
-
-        if(isnan(position[0]) or isnan(position[1])):
-            return
-
-#         self.t.goto(*position)
-
-        if(self.screen.checkBounds(position)):
-
-            self.t.goto(*position)
-        else:
-            otherPosition = self.toScreenCoords(other)
-
-            if(isnan(otherPosition[0]) or isnan(otherPosition[1])):
-                return
-
-            a, b = position
-
-            c, d = otherPosition
-
-            T, B, R, L = self.screen.height() * 0.5, 0 - self.screen.height() * 0.5, self.screen.width() * 0.5, 0 - self.screen.width() * 0.5
-
-            dilationFactor = 1
-            edge = None
-
-            if(a < L and a != c):
-                if(dilationFactor > (L - c) / (a - c)):
-                    dilationFactor = (L - c) / (a - c)
-
-            if(a > R and a != c):
-                dilationFactor = min(dilationFactor, (R - c) / (a - c))
-
-            if(b < B and b != d):
-                dilationFactor = min(dilationFactor, (B - d) / (b - d))
-
-            if(b > T and b != d):
-                dilationFactor = min(dilationFactor, (T - d) / (b - d))
-
-            newPosition = dilationFactor * a + (1 - dilationFactor) * c, dilationFactor * b + (1 - dilationFactor) * d
-            self.t.goto(newPosition)
-
-    def goto(self, point):
-        position = self.toScreenCoords(point)
-        self.t.goto(*position)
-#         cam = self.screen.dCam.camera
-#         self.point, oldPoint = newPoint, self.point
-#         if(not(cam.onCamera(newPoint)) and not(cam.onCamera(oldPoint))):
-#             return
-#
-#         self.fakeGoto(oldPoint, newPoint)
-#         self.fakeGoto(newPoint, oldPoint)
-
-    def down(self):
-        self.t.down()
-
-    def up(self):
-        self.t.up()
-
-    def begin_fill(self):
-        self.t.begin_fill()
-
-    def end_fill(self):
-        self.t.end_fill()
-
-    def pencolor(self, *args, **kwargs):
-        self.t.pencolor(*args, **kwargs)
-
-    def fillcolor(self, *args, **kwargs):
-        self.t.fillcolor(*args, **kwargs)
-
-    def width(self, *args, **kwargs):
-        self.t.width(*args, **kwargs)

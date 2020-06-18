@@ -16,14 +16,12 @@ if(__name__ == '__main__'):
 
     sides = []
 
-    sides.append(DSurface([Triangle(Point((-10, 10, 10)), Point((10, 10, 10)), Point((10, -10, 10)))], (1, 1, 0), (0, 0, 0)))
-
-#     sides.append(DSurface([Triangle(Point((-10, 10, 10)), Point((10, 10, 10)), Point((10, 10, -10))),
-#                            Triangle(Point((-10, 10, 10)), Point((-10, 10, -10)), Point((10, 10, -10)))], (1, 1, 0), (0, 0, 0)))
-#     sides.append(DSurface([Triangle(Point((-10, -10, 10)), Point((10, -10, 10)), Point((10, -10, -10))),
-#                            Triangle(Point((-10, -10, 10)), Point((-10, -10, -10)), Point((10, -10, -10)))], (0.5, 0.5, 0.5), (0, 0, 0)))
-#     sides.append(DSurface([Triangle(Point((10, -10, 10)), Point((10, 10, 10)), Point((10, 10, -10))),
-#                            Triangle(Point((10, -10, 10)), Point((10, -10, -10)), Point((10, 10, -10)))], (0, 1, 0), (0, 0, 0)))
+    sides.append(DSurface([Triangle(Point((-10, 10, 10)), Point((10, 10, 10)), Point((10, 10, -10))),
+                           Triangle(Point((-10, 10, 10)), Point((-10, 10, -10)), Point((10, 10, -10)))], (1, 1, 0), (0, 0, 0)))
+    sides.append(DSurface([Triangle(Point((-10, -10, 10)), Point((10, -10, 10)), Point((10, -10, -10))),
+                           Triangle(Point((-10, -10, 10)), Point((-10, -10, -10)), Point((10, -10, -10)))], (0.5, 0.5, 0.5), (0, 0, 0)))
+    sides.append(DSurface([Triangle(Point((10, -10, 10)), Point((10, 10, 10)), Point((10, 10, -10))),
+                           Triangle(Point((10, -10, 10)), Point((10, -10, -10)), Point((10, 10, -10)))], (0, 1, 0), (0, 0, 0)))
     for side in sides:
         dCam.show(side)
 

@@ -130,13 +130,13 @@ class DSurface(object):
 
         c = [[None, 2, 1], [None, None, 0]][a][b]
 
-        if(s[(a, c)] == None or s[(b, c)] == None):
+        if(None in (target[(a, c)], target[(b, c)], target[(c, a)], target[(c, b)])):
             return
 
         if(s[(a, c)] == s[(b, c)]):
             t.up()
             t.goto(*p[a, c])
-            t.down()
+            self.down(t)
             t.goto(*p[c, a])
             t.goto(*p[c, b])
             t.goto(*p[b, c])
@@ -146,7 +146,7 @@ class DSurface(object):
         if(s[(a, c)].isAdjacent(s[(b, c)])):
             t.up()
             t.goto(*p[a, c])
-            t.down()
+            self.down(t)
             t.goto(*p[c, a])
             t.goto(*p[c, b])
             t.goto(*p[b, c])
@@ -158,7 +158,7 @@ class DSurface(object):
             o = s[(c, a)].oposite()
             t.up()
             t.goto(*p[a, c])
-            t.down()
+            self.down(t)
             t.goto(*p[c, a])
             t.goto(*p[c, b])
             t.goto(*p[b, c])
